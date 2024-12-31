@@ -1,0 +1,84 @@
+package src.uk.ac.herts.sp23ahy.mod_6com2013.asgnpart2.view;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import javax.swing.*;
+
+public class Gui implements ActionListener {
+    private JFrame window;
+    private JPanel panelSouth, panelNorth;
+    private JTextField txtParcelID;
+    private JLabel lblParcelID;
+    private JButton btnClose, btnWriteToFile;
+    private JLabel fileWriteStatus;
+
+    public Gui() {
+        window = new JFrame("Parcel Management");
+        window.setBounds(100, 200, 500, 400);
+
+        panelNorth = new JPanel();
+        panelNorth.setLayout(new GridLayout(0, 2));
+
+        lblParcelID = new JLabel("Parcel ID");
+        fileWriteStatus = new JLabel("...");
+        txtParcelID = new JTextField(20);
+
+        panelNorth.add(lblParcelID);
+        panelNorth.add(txtParcelID);
+
+        panelSouth = new JPanel();
+        btnWriteToFile = new JButton("Write to File");
+        btnClose = new JButton("Close");
+
+        btnWriteToFile.addActionListener(this);
+        btnClose.addActionListener(this);
+
+        panelSouth.add(btnWriteToFile);
+        panelSouth.add(btnClose);
+        panelSouth.add(fileWriteStatus);
+
+        window.getContentPane().add(panelSouth, BorderLayout.SOUTH);
+        window.getContentPane().add(panelNorth, BorderLayout.NORTH);
+
+        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        window.setVisible(true);
+    }
+
+    public void writeToFile(String filename) {
+        // Validate that Parcel ID is not empty
+        if (txtParcelID.getText().isEmpty()) {
+            fileWriteStatus.setText("Parcel ID cannot be empty.");
+            fileWriteStatus.setForeground(Color.RED);
+            return;
+        }
+
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename))) {
+            bw.write("Parcel ID: " + txtParcelID.getText());
+            fileWriteStatus.setText("File Written Successfully.");
+            fileWriteStatus.setForeground(Color.BLUE);
+        } catch (IOException e) {
+            fileWriteStatus.setText("Error writing to file.");
+            fileWriteStatus.setForeground(Color.RED);
+        }
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == btnClose) {
+            System.out.println("Closing .. ");
+            System.exit(0);
+        } else if (e.getSource() == btnWriteToFile) {
+            writeToFile("datafile.txt");
+        }
+    }
+
+    public static void main(String[] args) {
+        new Gui();
+    }
+}
